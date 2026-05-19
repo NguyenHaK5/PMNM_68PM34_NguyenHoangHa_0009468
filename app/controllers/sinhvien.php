@@ -1,6 +1,12 @@
 <?php
 class sinhvien {
     function index() {
-        echo "Đây là danh sách sinh viên";
+        //trả về view 
+        require_once '../app/views/sinhvien/index.php';
+    }
+
+    function create() {
+        //trả về view 
+        require_once '../app/views/sinhvien/create.php';
     }
 }
