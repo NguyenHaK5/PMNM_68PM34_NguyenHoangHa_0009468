@@ -2,8 +2,8 @@
     session_start();
     class auth{
         protected $user=[
-            'admin' => '030205',
-            'tai' => '0024268'
+            'admin' => '00000',
+            'dragon' => '0009468'
         ];
         public function login() {
             if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,5 +18,13 @@
                     exit();
                 }
             }
+        }
+
+        public function logout() {
+            $_SESSION = [];
+            session_unset();
+            session_destroy();
+            header('Location: /home/login');
+            exit();
         }
     }

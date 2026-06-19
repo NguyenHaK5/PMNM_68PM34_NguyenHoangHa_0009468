@@ -10,7 +10,7 @@ class lophocModel
 
   public function getAllLopHoc()
   {
-    $query = "SELECT * FROM lophoc";
+    $query = "SELECT * FROM lophoc ORDER BY id ASC";
     $stmt = $this->conn->prepare($query);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,40 +31,49 @@ class lophocModel
     }
   }
 
-  public function paging($limit = 5, $offset = 0, $search = "")
+  public function paging($limit = 10, $offset = 0, $search = "")
   {
+    $conditions = [];
+    $params = [];
+
     if ($search !== "") {
-      $query = "SELECT * FROM lophoc WHERE MaLop LIKE :search OR TenLop LIKE :search LIMIT :limit OFFSET :offset";
-      $stmt = $this->conn->prepare($query);
-      $searchParam = "%" . $search . "%";
-      $stmt->bindParam(':search', $searchParam);
-      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-      $stmt->execute();
-      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-      // Tính tổng số bảng ghi theo điều kiện tìm kiếm
-      $countQuery = "SELECT COUNT(*) FROM lophoc WHERE MaLop LIKE :search OR TenLop LIKE :search";
-      $countStmt = $this->conn->prepare($countQuery);
-      $countStmt->bindParam(':search', $searchParam);
-      $countStmt->execute();
-      $totalRecords = $countStmt->fetchColumn();
-    } else {
-      $query = "SELECT * FROM lophoc LIMIT :limit OFFSET :offset";
-      $stmt = $this->conn->prepare($query);
-      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-      $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-      $stmt->execute();
-      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-      // Tính tổng số bảng ghi
-      $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM lophoc");
-      $totalRecords = $selectAllQuery->fetchColumn();
+      $conditions[] = "(lh.MaLop LIKE :search OR lh.TenLop LIKE :search)";
+      $params[':search'] = '%' . $search . '%';
     }
+    $whereSql = $conditions ? ('WHERE ' . implode(' AND ', $conditions)) : '';
 
-    $totalPages = ceil($totalRecords / $limit);
+    // Đếm số sinh viên thực tế đang thuộc mỗi lớp
+    $query = "SELECT lh.*, COUNT(sv.id) AS SiSoThucTe
+              FROM lophoc lh
+              LEFT JOIN sinhvien sv ON sv.MaLop = lh.MaLop
+              $whereSql
+              GROUP BY lh.id
+              ORDER BY lh.id ASC
+              LIMIT :limit OFFSET :offset";
+    $stmt = $this->conn->prepare($query);
+    foreach ($params as $key => $value) {
+      $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return ['lophocs' => $result, 'totalPages' => $totalPages];
+    $countQuery = "SELECT COUNT(*) FROM lophoc lh $whereSql";
+    $countStmt = $this->conn->prepare($countQuery);
+    foreach ($params as $key => $value) {
+      $countStmt->bindValue($key, $value);
+    }
+    $countStmt->execute();
+    $totalRecords = (int)$countStmt->fetchColumn();
+
+    $totalPages = $limit > 0 ? (int)ceil($totalRecords / $limit) : 1;
+
+    return [
+      'lophocs' => $result,
+      'totalPages' => $totalPages,
+      'totalRecords' => $totalRecords,
+    ];
   }
 
   public function getLopHocById($id)

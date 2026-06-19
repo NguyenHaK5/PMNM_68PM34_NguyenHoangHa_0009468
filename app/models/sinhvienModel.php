@@ -31,22 +31,51 @@ class sinhvienModel
     }
   }
 
-  public function paging($limit = 5, $offset = 0, $search = "")
+  public function paging($limit = 10, $offset = 0, $search = "", $maLop = "")
   {
-    $query = "SELECT * FROM sinhvien LIMIT :limit OFFSET :offset";
+    $conditions = [];
+    $params = [];
+
+    if ($search !== "") {
+      $conditions[] = "(sv.HoTen LIKE :search OR sv.MSSV LIKE :search)";
+      $params[':search'] = '%' . $search . '%';
+    }
+    if ($maLop !== "") {
+      $conditions[] = "sv.MaLop = :malop";
+      $params[':malop'] = $maLop;
+    }
+    $whereSql = $conditions ? ('WHERE ' . implode(' AND ', $conditions)) : '';
+
+    $query = "SELECT sv.*, lh.TenLop
+              FROM sinhvien sv
+              LEFT JOIN lophoc lh ON sv.MaLop = lh.MaLop
+              $whereSql
+              ORDER BY sv.id ASC
+              LIMIT :limit OFFSET :offset";
     $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    foreach ($params as $key => $value) {
+      $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Tính tổng số bảng ghi
-    $selectAllQuery = $this->conn->query("SELECT COUNT(*) FROM sinhvien");
-    $totalRecords = $selectAllQuery->fetchColumn();
+    $countQuery = "SELECT COUNT(*) FROM sinhvien sv $whereSql";
+    $countStmt = $this->conn->prepare($countQuery);
+    foreach ($params as $key => $value) {
+      $countStmt->bindValue($key, $value);
+    }
+    $countStmt->execute();
+    $totalRecords = (int)$countStmt->fetchColumn();
 
-    $totalPages = ceil($totalRecords / $limit);
+    $totalPages = $limit > 0 ? (int)ceil($totalRecords / $limit) : 1;
 
-    return ['sinhviens' => $result, 'totalPages' => $totalPages];
+    return [
+      'sinhviens' => $result,
+      'totalPages' => $totalPages,
+      'totalRecords' => $totalRecords,
+    ];
   }
 
   public function getSinhVienById($id)

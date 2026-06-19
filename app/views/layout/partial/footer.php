@@ -1,47 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo $title; ?></title>
-  <style>
-    footer {
-      background-color: blue;
-      /* Màu tím chính */
-      color: white;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-
-    footer a {
-      color: #e0d4ff;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      color: white;
-      text-decoration: underline;
-    }
-  </style>
-</head>
-
-<body>
-  <footer class="py-3">
-    <div class="container">
-      <div class="row text-center">
-        <div class="col-12">
-          <p class="mb-1">&copy; <?php echo date("Y"); ?> QLSinhVien. All Rights Reserved.</p>
-          <p class="mb-0 small">
-            Developed by <strong>Tạ Tương Đạt</strong> |
-            <a href="#">Chính sách bảo mật</a> |
-            <a href="#">Liên hệ</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </footer>
-</body>
-
-</html>
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    margin-top: 32px;
+  }
+  .site-footer-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+  .site-footer-inner a { color: var(--color-text-muted); text-decoration: underline; text-underline-offset: 2px; }
+  .site-footer-inner a:hover { color: var(--color-primary); }
+</style>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    &copy; <?php echo date("Y"); ?> Hệ thống Quản lý Sinh viên — PHP/MySQL ·
+    <a href="#">Chính sách bảo mật</a> ·
+    <a href="#">Liên hệ</a>
+  </div>
+</footer>

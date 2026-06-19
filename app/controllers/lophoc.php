@@ -2,21 +2,40 @@
 require_once "../app/core/controller.php";
 class lophoc extends Controller
 {
-  public function index($limit = 5, $offset = 0, $search = "")
+  public function index($limitParam = null, $offsetParam = null)
   {
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : ($limitParam !== null ? (int)$limitParam : 10);
+    $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : ($offsetParam !== null ? (int)$offsetParam : 0);
+    $limit = $limit > 0 ? $limit : 10;
+    $offset = $offset >= 0 ? $offset : 0;
+    $search = trim($_GET['search'] ?? '');
+
     $lophocModel = $this->model('lophocModel');
     $result = $lophocModel->paging($limit, $offset, $search);
     $lophocs = $result['lophocs'];
     $totalPages = $result['totalPages'];
+    $totalRecords = $result['totalRecords'];
 
     // Trả về View
-    $this->view('layout/masterLayout', ['viewname' => 'lophoc/index', 'lophocs' => $lophocs, 'title' => 'Danh sách lớp học', 'totalPages' => $totalPages]);
+    $this->view('layout/masterLayout', [
+      'viewname' => 'lophoc/index',
+      'lophocs' => $lophocs,
+      'title' => 'Danh sách lớp học',
+      'totalPages' => $totalPages,
+      'totalRecords' => $totalRecords,
+      'limit' => $limit,
+      'offset' => $offset,
+      'search' => $search,
+    ]);
   }
 
   public function create()
   {
     // Trả về View
-    require_once "../app/views/lophoc/create.php";
+    $this->view('layout/masterLayout', [
+      'viewname' => 'lophoc/create',
+      'title' => 'Thêm lớp học',
+    ]);
   }
 
   public function store()
@@ -50,7 +69,11 @@ class lophoc extends Controller
       exit();
     }
 
-    $this->view('layout/masterLayout', ['viewname' => 'lophoc/edit', 'lophoc' => $lophoc, 'title' => 'Sửa thông tin Lớp học']);
+    $this->view('layout/masterLayout', [
+      'viewname' => 'lophoc/edit',
+      'lophoc' => $lophoc,
+      'title' => 'Sửa thông tin Lớp học',
+    ]);
   }
 
   public function update($id)
