@@ -19,6 +19,16 @@
     <label for="GioiTinh">Giới tính:</label>
     <input type="text" id="GioiTinh" name="GioiTinh" value="<?php echo htmlspecialchars($sinhvien['GioiTinh']); ?>" required><br><br>
 
+    <label for="MaLop">Lớp học:</label>
+    <select id="MaLop" name="MaLop">
+      <option value="" <?php echo empty($sinhvien['MaLop']) ? 'selected' : ''; ?>>-- Chưa chọn lớp --</option>
+      <?php foreach ($lophocs as $lop) : ?>
+        <option value="<?php echo htmlspecialchars($lop['MaLop']); ?>" <?php echo ($sinhvien['MaLop'] === $lop['MaLop']) ? 'selected' : ''; ?>>
+          <?php echo htmlspecialchars($lop['MaLop']) . ' - ' . htmlspecialchars($lop['TenLop']); ?>
+        </option>
+      <?php endforeach; ?>
+    </select><br><br>
+
     <input type="submit" class="btn btn-warning" value="Cập nhật">
     <a href="/sinhvien/index" style="margin-left: 10px;" class="btn btn-danger">Hủy bỏ</a>
   </form>

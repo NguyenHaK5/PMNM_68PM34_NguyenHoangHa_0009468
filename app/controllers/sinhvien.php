@@ -16,8 +16,12 @@ class sinhvien extends Controller
 
   public function create()
   {
+    // Lấy danh sách lớp học để hiển thị trong dropdown
+    $lophocModel = $this->model('lophocModel');
+    $lophocs = $lophocModel->getAllLopHoc();
+
     // Trả về View
-    require_once "../app/views/sinhvien/create.php";
+    $this->view('sinhvien/create', ['lophocs' => $lophocs]);
   }
 
   public function store()
@@ -26,9 +30,10 @@ class sinhvien extends Controller
       $MSSV = $_POST['MSSV'];
       $HoTen = $_POST['HoTen'];
       $GioiTinh = $_POST['GioiTinh'];
+      $MaLop = $_POST['MaLop'] !== '' ? $_POST['MaLop'] : null;
 
       $sinhvienModel = $this->model('sinhvienModel');
-      $result = $sinhvienModel->create($MSSV, $HoTen, $GioiTinh);
+      $result = $sinhvienModel->create($MSSV, $HoTen, $GioiTinh, $MaLop);
       if ($result) {
         header("Location: /sinhvien/index");
         exit();
@@ -50,7 +55,11 @@ class sinhvien extends Controller
       exit();
     }
 
-    $this->view('layout/masterLayout', ['viewname' => 'sinhvien/edit', 'sinhvien' => $sinhvien, 'title' => 'Sửa thông tin Sinh viên']);
+    // Lấy danh sách lớp học để hiển thị trong dropdown
+    $lophocModel = $this->model('lophocModel');
+    $lophocs = $lophocModel->getAllLopHoc();
+
+    $this->view('layout/masterLayout', ['viewname' => 'sinhvien/edit', 'sinhvien' => $sinhvien, 'lophocs' => $lophocs, 'title' => 'Sửa thông tin Sinh viên']);
   }
 
   public function update($id)
@@ -60,9 +69,10 @@ class sinhvien extends Controller
       $MSSV = $_POST['MSSV'];
       $HoTen = $_POST['HoTen'];
       $GioiTinh = $_POST['GioiTinh'];
+      $MaLop = $_POST['MaLop'] !== '' ? $_POST['MaLop'] : null;
 
       $sinhvienModel = $this->model('sinhvienModel');
-      $result = $sinhvienModel->update($id, $MSSV, $HoTen, $GioiTinh);
+      $result = $sinhvienModel->update($id, $MSSV, $HoTen, $GioiTinh, $MaLop);
 
       if ($result) {
         header("Location: /sinhvien/index");

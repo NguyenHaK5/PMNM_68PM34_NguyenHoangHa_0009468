@@ -13,7 +13,6 @@
 </head>
 
 <body>
-  <!-- A grey horizontal navbar that becomes vertical on small screens -->
   <header>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
       <div class="container-fluid">
@@ -22,7 +21,7 @@
             <a class="nav-link active" href="/sinhvien/index">Quản lý sinh viên</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/home/index">Quản lý lớp học</a>
+            <a class="nav-link" href="/lophoc/index">Quản lý lớp học</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Link</a>

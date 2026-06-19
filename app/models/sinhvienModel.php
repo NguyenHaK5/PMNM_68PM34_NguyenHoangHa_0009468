@@ -16,13 +16,14 @@ class sinhvienModel
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public function create($MSSV, $HoTen, $GioiTinh)
+  public function create($MSSV, $HoTen, $GioiTinh, $MaLop = null)
   {
-    $query = "INSERT INTO sinhvien (MSSV, HoTen, GioiTinh) VALUES ( :MSSV, :HoTen, :GioiTinh )";
+    $query = "INSERT INTO sinhvien (MSSV, HoTen, GioiTinh, MaLop) VALUES ( :MSSV, :HoTen, :GioiTinh, :MaLop )";
     $stmt = $this->conn->prepare($query);
     $stmt->bindParam(':MSSV', $MSSV);
     $stmt->bindParam(':HoTen', $HoTen);
     $stmt->bindParam(':GioiTinh', $GioiTinh);
+    $stmt->bindParam(':MaLop', $MaLop);
     if ($stmt->execute()) {
       return true;
     } else {
@@ -57,14 +58,15 @@ class sinhvienModel
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  public function update($id, $MSSV, $HoTen, $GioiTinh)
+  public function update($id, $MSSV, $HoTen, $GioiTinh, $MaLop = null)
   {
-    $query = "UPDATE sinhvien SET MSSV = :MSSV, HoTen = :HoTen, GioiTinh = :GioiTinh WHERE id = :id";
+    $query = "UPDATE sinhvien SET MSSV = :MSSV, HoTen = :HoTen, GioiTinh = :GioiTinh, MaLop = :MaLop WHERE id = :id";
     $stmt = $this->conn->prepare($query);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->bindParam(':MSSV', $MSSV);
     $stmt->bindParam(':HoTen', $HoTen);
     $stmt->bindParam(':GioiTinh', $GioiTinh);
+    $stmt->bindParam(':MaLop', $MaLop);
     return $stmt->execute();
   }
 
